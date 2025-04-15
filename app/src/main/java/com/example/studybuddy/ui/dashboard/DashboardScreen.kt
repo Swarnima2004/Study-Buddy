@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.ui.components.CountCard
 import com.example.studybuddy.ui.components.SubjectCard
+import com.example.studybuddy.ui.components.tasksList
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -82,6 +83,11 @@ fun DashboardScreen() {
                     Text(text = "Start Studying")
                 }
             }
+            tasksList(
+                sectionTitle = "UPCOMING TASKS",
+                emptyListText = "You don't have any upcoming tasks. \n" + "Click the + in the subject screen to add new task.",
+                tasks = emptyList()
+            )
         }
     }
 }
