@@ -1,4 +1,4 @@
-package com.example.studybuddy.ui.theme
+package com.example.studybuddy.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

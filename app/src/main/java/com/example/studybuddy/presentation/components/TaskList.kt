@@ -1,4 +1,4 @@
-package com.example.studybuddy.ui.components
+package com.example.studybuddy.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

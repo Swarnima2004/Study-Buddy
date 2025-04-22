@@ -1,4 +1,4 @@
-package com.example.studybuddy.ui.theme
+package com.example.studybuddy.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

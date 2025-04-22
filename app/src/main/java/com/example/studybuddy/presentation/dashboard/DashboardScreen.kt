@@ -1,4 +1,4 @@
-package com.example.studybuddy.ui.dashboard
+package com.example.studybuddy.presentation.dashboard
 
 
 import androidx.compose.foundation.Image
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,9 +37,11 @@ import androidx.compose.ui.unit.dp
 import com.example.studybuddy.R
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.domain.model.Task
-import com.example.studybuddy.ui.components.CountCard
-import com.example.studybuddy.ui.components.SubjectCard
-import com.example.studybuddy.ui.components.tasksList
+import com.example.studybuddy.domain.model.session
+import com.example.studybuddy.presentation.components.CountCard
+import com.example.studybuddy.presentation.components.StudySessionList
+import com.example.studybuddy.presentation.components.SubjectCard
+import com.example.studybuddy.presentation.components.tasksList
 
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -53,6 +56,45 @@ fun DashboardScreen() {
         Subjects(name = "Chemistry", goalHours = 10f, colors = Subjects.subjectCardColors[4], subjectId = 0),
         Subjects(name = "English", goalHours = 10f, colors = Subjects.subjectCardColors[0], subjectId = 0)
     )
+
+    val sessions = listOf(
+        session(
+            sessionSubjectId = 0,
+            relatedToSubject = "Maths",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        session(
+            sessionSubjectId = 0,
+            relatedToSubject = "dsa",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        session(
+            sessionSubjectId = 0,
+            relatedToSubject = "hindi",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        session(
+            sessionSubjectId = 0,
+            relatedToSubject = "physics",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        ),
+        session(
+            sessionSubjectId = 0,
+            relatedToSubject = "chemistry",
+            date = 0L,
+            duration = 2,
+            sessionId = 0
+        )
+    )
+
     val tasks = listOf(
         Task(
             title = "Prepare for exam",
@@ -157,6 +199,18 @@ fun DashboardScreen() {
                 onCheckBoxClick = {},
                 onTaskCardClick = {}
             )
+            item{
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+          StudySessionList(
+              sectionTitle =  "STUDY SESSIONS",
+              emptyListText = "You don't have any recent session. \n" +
+                      "Start session to track of your session.",
+              Sessions = sessions,
+              onDeleteIconClick = {}
+
+          )
         }
     }
 }
