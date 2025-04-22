@@ -23,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import com.example.studybuddy.R
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +33,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.studybuddy.R
 import com.example.studybuddy.domain.model.Subjects
+import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.ui.components.CountCard
 import com.example.studybuddy.ui.components.SubjectCard
 import com.example.studybuddy.ui.components.tasksList
@@ -45,37 +46,103 @@ import com.example.studybuddy.ui.components.tasksList
 fun DashboardScreen() {
 
     val subjectList = listOf(
-        Subjects(name = "Maths", goalHours = 10f, colors = Subjects.subjectCardColors[0]),
-        Subjects(name = "DSA", goalHours = 10f, colors = Subjects.subjectCardColors[1]),
-        Subjects(name = "Development", goalHours = 10f, colors = Subjects.subjectCardColors[2]),
-        Subjects(name = "Physics", goalHours = 10f, colors = Subjects.subjectCardColors[3]),
-        Subjects(name = "Chemistry", goalHours = 10f, colors = Subjects.subjectCardColors[4]),
-        Subjects(name = "English", goalHours = 10f, colors = Subjects.subjectCardColors[0])
+        Subjects(name = "Maths", goalHours = 10f, colors = Subjects.subjectCardColors[0], subjectId = 0),
+        Subjects(name = "DSA", goalHours = 10f, colors = Subjects.subjectCardColors[1], subjectId = 0),
+        Subjects(name = "Development", goalHours = 10f, colors = Subjects.subjectCardColors[2], subjectId = 0),
+        Subjects(name = "Physics", goalHours = 10f, colors = Subjects.subjectCardColors[3], subjectId = 0),
+        Subjects(name = "Chemistry", goalHours = 10f, colors = Subjects.subjectCardColors[4], subjectId = 0),
+        Subjects(name = "English", goalHours = 10f, colors = Subjects.subjectCardColors[0], subjectId = 0)
+    )
+    val tasks = listOf(
+        Task(
+            title = "Prepare for exam",
+            description = "",
+            dueDate = 0L,
+            priority = 1,
+            relatedToSubject = "Maths",
+            isCompleted = true,
+            taskSubjectId = 0,
+            taskId = 1
+        ),
+        Task(
+            title = "Prepare for dsa",
+            description = "",
+            dueDate = 0L,
+            priority = 0,
+            relatedToSubject = "Maths",
+            isCompleted = false,
+            taskSubjectId = 0,
+            taskId = 1
+        ),
+        Task(
+            title = "Prepare for development",
+            description = "",
+            dueDate = 0L,
+            priority = 2,
+            relatedToSubject = "Maths",
+            isCompleted = false,
+            taskSubjectId = 0,
+            taskId = 1
+        ),
+        Task(
+            title = "Prepare for school",
+            description = "",
+            dueDate = 0L,
+            priority = 1,
+            relatedToSubject = "Maths",
+            isCompleted = true,
+            taskSubjectId = 0,
+            taskId = 1
+        ),
+        Task(
+            title = "Prepare for coaching",
+            description = "",
+            dueDate = 0L,
+            priority = 2,
+            relatedToSubject = "Maths",
+            isCompleted = false,
+            taskSubjectId = 0,
+            taskId = 1
+        ),
+        Task(
+            title = "Prepare for cn",
+            description = "",
+            dueDate = 0L,
+            priority = 0,
+            relatedToSubject = "Maths",
+            isCompleted = false,
+            taskSubjectId = 0,
+            taskId = 1
         )
+    )
 
-
-    Scaffold (
-        topBar ={ DashboardScreenTopBar()}
-    ){ paddingValues ->
-        LazyColumn (
-            modifier = Modifier.fillMaxSize().padding(paddingValues)
-        ){
-        item {
-            CountCardSection(
-                modifier = Modifier.fillMaxWidth().padding(12.dp),
-                subjectCount = 5,
-                studiedHours = "10",
-                goalStudyHours = "12"
-            )
-        }
-            item{
+    Scaffold(
+        topBar = { DashboardScreenTopBar() }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            item {
+                CountCardSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    subjectCount = 5,
+                    studiedHours = "10",
+                    goalStudyHours = "12"
+                )
+            }
+            item {
                 SubjectCardSection(
                     modifier = Modifier.fillMaxWidth(),
                     subjectList = subjectList
                 )
             }
-            item{
-                Button(onClick ={},
+            item {
+                Button(
+                    onClick = {},
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 40.dp, vertical = 20.dp)
@@ -86,31 +153,36 @@ fun DashboardScreen() {
             tasksList(
                 sectionTitle = "UPCOMING TASKS",
                 emptyListText = "You don't have any upcoming tasks. \n" + "Click the + in the subject screen to add new task.",
-                tasks = emptyList()
+                tasks = tasks,
+                onCheckBoxClick = {},
+                onTaskCardClick = {}
             )
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DashboardScreenTopBar(){
+private fun DashboardScreenTopBar() {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = "Study Buddy",
+            Text(
+                text = "Study Buddy",
                 style = MaterialTheme.typography.headlineMedium
             )
         }
     )
 }
+
 @Composable
 private fun CountCardSection(
     modifier: Modifier,
     subjectCount: Int,
     studiedHours: String,
     goalStudyHours: String
-){
+) {
     Row(
-       modifier = modifier
+        modifier = modifier
     ) {
         CountCard(
             modifier = Modifier.weight(1f),
@@ -133,64 +205,65 @@ private fun CountCardSection(
         )
     }
 }
+
 @Composable
 private fun SubjectCardSection(
-    modifier : Modifier,
-    subjectList : List<Subjects>,
-    emptyListText :String = "You don't have any subjects.\n Click on + to add new subject."
-){
-   Column(
-       modifier = modifier
+    modifier: Modifier,
+    subjectList: List<Subjects>,
+    emptyListText: String = "You don't have any subjects.\n Click on + to add new subject."
+) {
+    Column(
+        modifier = modifier
 
 
-   ){
-       Row(
-           modifier = Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically,
-           horizontalArrangement = Arrangement.SpaceBetween
-       ){
-          Text(
-              text = "SUBJECTS",
-              style = MaterialTheme.typography.bodySmall,
-              modifier = Modifier.padding(12.dp)
-          )
-           IconButton(onClick = { /*TODO*/ }) {
-             Icon(
-                 imageVector = Icons.Default.Add,
-                 contentDescription = "Add Subject"
-             )
-           }
-       }
-       if(subjectList.isEmpty()){
-           Image(
-               modifier = Modifier
-                   .size(120.dp)
-                   .align(Alignment.CenterHorizontally),
-               painter = painterResource(R.drawable.books),
-               contentDescription = emptyListText
-           )
-           Text(
-               modifier = Modifier.fillMaxWidth(),
-               text = emptyListText,
-               style = MaterialTheme.typography.bodySmall,
-               color = Color.Gray,
-               textAlign = TextAlign.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "SUBJECTS",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(12.dp)
+            )
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Subject"
+                )
+            }
+        }
+        if (subjectList.isEmpty()) {
+            Image(
+                modifier = Modifier
+                    .size(120.dp)
+                    .align(Alignment.CenterHorizontally),
+                painter = painterResource(R.drawable.books),
+                contentDescription = emptyListText
+            )
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = emptyListText,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray,
+                textAlign = TextAlign.Center
 
-           )
-       }
-      LazyRow (
-          horizontalArrangement = Arrangement.spacedBy(12.dp),
-          contentPadding = PaddingValues(start = 12.dp, end = 12.dp)
-      ){
-          items(subjectList) { subject ->
-              SubjectCard(
-                  subjectName = subject.name,
-                  gradientColors = subject.colors,
-                  onClick = {  }
-              )
-          }
-      }
-   }
+            )
+        }
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(start = 12.dp, end = 12.dp)
+        ) {
+            items(subjectList) { subject ->
+                SubjectCard(
+                    subjectName = subject.name,
+                    gradientColors = subject.colors,
+                    onClick = { }
+                )
+            }
+        }
+    }
 }
 
 

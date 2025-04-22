@@ -10,7 +10,9 @@ import com.example.studybuddy.ui.theme.gradient5
 data class Subjects(
     val name: String,
     val goalHours : Float,
-    val colors : List<Color>
+    val colors : List<Color>,
+    val subjectId : Int
+
 ){
     companion object{
         val subjectCardColors = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
