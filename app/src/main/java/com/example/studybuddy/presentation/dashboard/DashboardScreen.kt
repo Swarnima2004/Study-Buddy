@@ -45,6 +45,7 @@ import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.model.session
 import com.example.studybuddy.presentation.components.AddSubjectDialog
 import com.example.studybuddy.presentation.components.CountCard
+import com.example.studybuddy.presentation.components.DeleteDialog
 import com.example.studybuddy.presentation.components.StudySessionList
 import com.example.studybuddy.presentation.components.SubjectCard
 import com.example.studybuddy.presentation.components.tasksList
@@ -193,6 +194,8 @@ fun DashboardScreen() {
     )
 
     var isAddSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
+
     //input from the user
     var subjectName by remember { mutableStateOf("") }
     var goalHours by remember{ mutableStateOf("") }
@@ -211,6 +214,16 @@ fun DashboardScreen() {
             isAddSubjectDialogOpen = false
         }
 
+    )
+
+    // delete dialog box
+    DeleteDialog(
+        isOpen = isDeleteSessionDialogOpen,
+        title = "Delete Session",
+        bodyText = "Are you sure you want to delete this session? Your study hours will be reduced"
+                        +"The action can nat be undo",
+        onDismissRequest = {isDeleteSessionDialogOpen = false},
+        onConfirmButtonClick = {isDeleteSessionDialogOpen = false }
     )
 
     Scaffold(
@@ -266,7 +279,7 @@ fun DashboardScreen() {
                 emptyListText = "You don't have any recent session. \n" +
                         "Start session to track of your session.",
                 Sessions = sessions,
-                onDeleteIconClick = {}
+                onDeleteIconClick = {isDeleteSessionDialogOpen = true}
 
             )
         }
