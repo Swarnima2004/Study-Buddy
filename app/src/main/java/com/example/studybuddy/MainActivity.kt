@@ -7,7 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.model.session
+import com.example.studybuddy.presentation.Task.TaskScreen
 import com.example.studybuddy.presentation.dashboard.DashboardScreen
+import com.example.studybuddy.presentation.sessionScreen.sessionScreen
 import com.example.studybuddy.presentation.subjects.SubjectScreen
 import com.example.studybuddy.presentation.theme.StudyBuddyTheme
 
@@ -17,7 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             StudyBuddyTheme {
-                SubjectScreen()
+              sessionScreen()
 
             }
         }
