@@ -7,19 +7,20 @@ import androidx.activity.enableEdgeToEdge
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.model.session
-import com.example.studybuddy.presentation.Task.TaskScreen
-import com.example.studybuddy.presentation.dashboard.DashboardScreen
-import com.example.studybuddy.presentation.sessionScreen.sessionScreen
-import com.example.studybuddy.presentation.subjects.SubjectScreen
+import com.example.studybuddy.presentation.NavGraphs
 import com.example.studybuddy.presentation.theme.StudyBuddyTheme
+import com.ramcosta.composedestinations.DestinationsNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             StudyBuddyTheme {
-              sessionScreen()
+                DestinationsNavHost(navGraph = NavGraphs.root)
 
             }
         }

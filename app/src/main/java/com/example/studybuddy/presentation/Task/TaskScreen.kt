@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studybuddy.presentation.components.DeleteDialog
 import com.example.studybuddy.presentation.components.SubjectListBottomSheet
 import com.example.studybuddy.presentation.components.TaskCheckBox
@@ -53,16 +54,39 @@ import com.example.studybuddy.presentation.theme.Red
 import com.example.studybuddy.subjectList
 import com.example.studybuddy.util.Priority
 import com.example.studybuddy.util.changeMillisToDateString
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 
+data class TaskScreenNavArg(
+    val taskId: Int?,
+    val subjectId :Int?
+)
+
+@Destination(navArgsDelegate = TaskScreenNavArg::class)
+@Composable
+fun TaskScreenRouter(
+    navigator: DestinationsNavigator
+) {
+
+    val viewModel: TaskViewModel = hiltViewModel()
+
+    TaskScreen(
+        onBackbuttoClick = {
+            navigator.navigateUp()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, showSystemUi = true)
 
 @Composable
-fun TaskScreen() {
+private fun TaskScreen(
+    onBackbuttoClick: () -> Unit
+) {
     var isDatePickerDialogOpen by rememberSaveable { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = Instant.now().toEpochMilli()
@@ -120,7 +144,7 @@ fun TaskScreen() {
                 isTaskExist = true,
                 isCompleted = false,
                 checkBoxBorderColor = Red,
-                onBackbuttoClick = { /*TODO*/ },
+                onBackbuttoClick = onBackbuttoClick,
                 onDeleteButtonClick = { isdeleteDialogOpen = true },
                 onCheckBoxClick = { /*TODO*/ }
             )

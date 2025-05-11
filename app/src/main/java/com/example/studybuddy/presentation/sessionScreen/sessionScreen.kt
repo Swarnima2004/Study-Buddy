@@ -1,7 +1,6 @@
 package com.example.studybuddy.presentation.sessionScreen
 
 
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,21 +32,37 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.studybuddy.presentation.components.DeleteDialog
 import com.example.studybuddy.presentation.components.StudySessionList
 import com.example.studybuddy.presentation.components.SubjectListBottomSheet
 import com.example.studybuddy.sessions
 import com.example.studybuddy.subjectList
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.launch
 
+@Destination
+@Composable
+fun SessionScreenRouter(
+    navigator: DestinationsNavigator
+) {
+    val viewModel : sessionScreenViewModel = hiltViewModel()
+        sessionScreen(
+            onBackButtonClick = {
+                navigator.navigateUp()
+            }
+        )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@Preview(showBackground = true, showSystemUi = true)
-fun sessionScreen() {
+
+private fun sessionScreen(
+    onBackButtonClick: () -> Unit
+) {
 
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState()
@@ -56,12 +71,12 @@ fun sessionScreen() {
 
 
     SubjectListBottomSheet(
-        sheetState = sheetState ,
+        sheetState = sheetState,
         isOpen = isBottomSheetOpen,
         subjects = subjectList,
         onSubjectClicked = {
             scope.launch { sheetState.hide() }.invokeOnCompletion {
-                if(!sheetState.isVisible) isBottomSheetOpen = false
+                if (!sheetState.isVisible) isBottomSheetOpen = false
             }
         },
         onDismissRequest = {
@@ -71,18 +86,19 @@ fun sessionScreen() {
 
 
     DeleteDialog(
-        isOpen =isdeleteDialogOpen ,
+        isOpen = isdeleteDialogOpen,
         title = "Delete Session ?",
-        bodyText = "Are you sure.you want to delete this task?"+
+        bodyText = "Are you sure.you want to delete this task?" +
                 "This action cannot be undone . ",
         onDismissRequest = { isdeleteDialogOpen = false },
-        onConfirmButtonClick = {  isdeleteDialogOpen = false
+        onConfirmButtonClick = {
+            isdeleteDialogOpen = false
         }
     )
 
 
     Scaffold(
-        topBar = { SessionScreenTopBar(onBackButtonClick = { /*TODO*/ }) }
+        topBar = { SessionScreenTopBar(onBackButtonClick = onBackButtonClick) }
     ) { paddingValue ->
         LazyColumn(
             modifier = Modifier
@@ -102,10 +118,10 @@ fun sessionScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 14.dp),
                     relatedToSubject = "Hindi",
-                    selectSubjectButtonClick = { isBottomSheetOpen = true}
+                    selectSubjectButtonClick = { isBottomSheetOpen = true }
                 )
             }
-            item{
+            item {
                 ButtonSection(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -120,7 +136,7 @@ fun sessionScreen() {
                 emptyListText = "You don't have any recent session. \n" +
                         "Start session to track of your session.",
                 Sessions = sessions,
-                onDeleteIconClick = {isdeleteDialogOpen = true }
+                onDeleteIconClick = { isdeleteDialogOpen = true }
 
             )
 
@@ -204,14 +220,14 @@ private fun RelatedToSubjectSection(
 
 @Composable
 private fun ButtonSection(
-    modifier : Modifier,
-    startSessionButtonClick : () -> Unit,
-    cancelButtonClick : () ->Unit,
-    finishButtonClick :() -> Unit,
+    modifier: Modifier,
+    startSessionButtonClick: () -> Unit,
+    cancelButtonClick: () -> Unit,
+    finishButtonClick: () -> Unit,
 
-) {
+    ) {
     Row(
-        modifier = modifier ,
+        modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
 
     ) {
@@ -225,12 +241,14 @@ private fun ButtonSection(
         Button(onClick = startSessionButtonClick) {
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                text = "Start")
+                text = "Start"
+            )
         }
         Button(onClick = finishButtonClick) {
             Text(
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                text = "Finish")
+                text = "Finish"
+            )
         }
     }
 }

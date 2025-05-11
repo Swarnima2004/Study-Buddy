@@ -39,19 +39,60 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.Navigator
 import com.example.studybuddy.R
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.model.session
+import com.example.studybuddy.presentation.Task.TaskScreenNavArg
 import com.example.studybuddy.presentation.components.AddSubjectDialog
 import com.example.studybuddy.presentation.components.CountCard
 import com.example.studybuddy.presentation.components.DeleteDialog
 import com.example.studybuddy.presentation.components.StudySessionList
 import com.example.studybuddy.presentation.components.SubjectCard
 import com.example.studybuddy.presentation.components.tasksList
+import com.example.studybuddy.presentation.destinations.SessionScreenRouterDestination
+import com.example.studybuddy.presentation.destinations.SubjectScreenRouterDestination
+import com.example.studybuddy.presentation.destinations.TaskScreenRouterDestination
+import com.example.studybuddy.presentation.subjects.SubjectScreenNavArgs
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+
+@Destination(start = true)
+@Composable
+fun DashboardScreenRouter(
+    navigator: DestinationsNavigator
+) {
+
+    val viewModel: DasboardViewModel = hiltViewModel()
+
+    DashboardScreen(
+        onSubjectCardClick ={
+            subjectId ->
+            subjectId?. let{
+                val navArg = SubjectScreenNavArgs(subjectId = subjectId)
+                navigator.navigate(SubjectScreenRouterDestination(navArg))
+            }
+        } ,
+        onTaskCardClick = {taskId ->
+            val navArg = TaskScreenNavArg(taskId = taskId ,subjectId = null)
+            navigator.navigate(TaskScreenRouterDestination(navArgs = navArg))
+
+        },
+        onStartSessionButtonClick = {
+            navigator.navigate(SessionScreenRouterDestination())
+        }
+    )
+}
+
 
 @Composable
-fun DashboardScreen() {
+private fun DashboardScreen(
+    onSubjectCardClick: (Int?) -> Unit ,
+    onTaskCardClick: (Int?) -> Unit,
+    onStartSessionButtonClick : () -> Unit
+) {
 
     val subjectList = listOf(
         Subjects(
@@ -250,12 +291,13 @@ fun DashboardScreen() {
                     subjectList = subjectList,
                     onAddIconClick = {
                         isAddSubjectDialogOpen = true
-                    }
+                    },
+                    onSubjectCardClick =  onSubjectCardClick
                 )
             }
             item {
                 Button(
-                    onClick = {},
+                    onClick = onStartSessionButtonClick,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 40.dp, vertical = 20.dp)
@@ -268,7 +310,7 @@ fun DashboardScreen() {
                 emptyListText = "You don't have any upcoming tasks. \n" + "Click the + in the subject screen to add new task.",
                 tasks = tasks,
                 onCheckBoxClick = {},
-                onTaskCardClick = {}
+                onTaskCardClick = onTaskCardClick
             )
             item {
                 Spacer(modifier = Modifier.height(20.dp))
@@ -336,7 +378,8 @@ private fun SubjectCardSection(
     modifier: Modifier,
     subjectList: List<Subjects>,
     emptyListText: String = "You don't have any subjects.\n Click on + to add new subject.",
-    onAddIconClick: () -> Unit
+    onAddIconClick: () -> Unit,
+    onSubjectCardClick: (Int?) -> Unit
 
 ) {
     Column(
@@ -386,7 +429,7 @@ private fun SubjectCardSection(
                 SubjectCard(
                     subjectName = subject.name,
                     gradientColors = subject.colors,
-                    onClick = { }
+                    onClick = {  onSubjectCardClick(subject.subjectId)}
                 )
             }
         }
