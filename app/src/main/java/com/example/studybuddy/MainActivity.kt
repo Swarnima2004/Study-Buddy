@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.ui.graphics.toArgb
+import androidx.navigation.NavGraph
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.model.session
@@ -31,37 +33,37 @@ val subjectList = listOf(
     Subjects(
         name = "Maths",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[0],
+        colors = Subjects.subjectCardColors[0].map{ it.toArgb()},
         subjectId = 0
     ),
     Subjects(
         name = "DSA",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[1],
+        colors = Subjects.subjectCardColors[1].map{ it.toArgb()},
         subjectId = 0
     ),
     Subjects(
         name = "Development",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[2],
+        colors = Subjects.subjectCardColors[2].map{ it.toArgb()},
         subjectId = 0
     ),
     Subjects(
         name = "Physics",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[3],
+        colors = Subjects.subjectCardColors[3].map{ it.toArgb()},
         subjectId = 0
     ),
     Subjects(
         name = "Chemistry",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[4],
+        colors = Subjects.subjectCardColors[4].map{ it.toArgb()},
         subjectId = 0
     ),
     Subjects(
         name = "English",
         goalHours = 10f,
-        colors = Subjects.subjectCardColors[0],
+        colors = Subjects.subjectCardColors[0].map{ it.toArgb()},
         subjectId = 0
     )
 )

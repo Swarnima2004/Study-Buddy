@@ -43,6 +43,9 @@ android {
     buildFeatures {
         compose = true
     }
+    ksp {
+        arg("ksp.verbose", "true")
+    }
 
 
 }
@@ -73,7 +76,7 @@ dependencies {
     ksp("io.github.raamcosta.compose-destinations:ksp:$destinationVersion")
 
     // Room
-    val roomVersion = "2.5.2"
+    val roomVersion = "2.7.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")

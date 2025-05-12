@@ -1,5 +1,6 @@
 package com.example.studybuddy.util
 
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Yellow
 import com.example.studybuddy.presentation.theme.Green
@@ -31,4 +32,16 @@ fun Long?.changeMillisToDateString():String{
     }?: LocalDate.now()
 
     return date.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+}
+
+fun Long.toHours():Float{
+    val hours = this.toFloat()/3600f
+    return "%.2f".format(hours).toFloat()
+}
+
+sealed class SnackbarEvent {
+    data class ShowSnacker (
+        val message : String,
+        val duration : SnackbarDuration = SnackbarDuration.Short
+    ): SnackbarEvent()
 }
