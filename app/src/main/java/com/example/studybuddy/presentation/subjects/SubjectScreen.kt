@@ -25,10 +25,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.presentation.Task.TaskScreenNavArg
 import com.example.studybuddy.presentation.components.AddSubjectDialog
@@ -53,8 +57,11 @@ import com.example.studybuddy.presentation.components.tasksList
 import com.example.studybuddy.presentation.destinations.TaskScreenRouterDestination
 import com.example.studybuddy.sessions
 import com.example.studybuddy.tasks
+import com.example.studybuddy.util.SnackbarEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collectLatest
 
 data class SubjectScreenNavArgs(
     val subjectId : Int
@@ -67,8 +74,12 @@ fun SubjectScreenRouter(
 ) {
 
     val viewModel : SubjectViewModel = hiltViewModel()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     SubjectScreen(
+        state = state,
+        onEvent = viewModel::onEvent,
+        snackbarEvent = viewModel.snackbarEventFlow,
         onBackButtonCLick = {
           navigator.navigateUp()
         },
@@ -86,6 +97,9 @@ fun SubjectScreenRouter(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SubjectScreen(
+    state : SubjectState,
+    onEvent: (SubjectEvent) -> Unit,
+    snackbarEvent: SharedFlow<SnackbarEvent>,
     onBackButtonCLick: () -> Unit,
     onAddTaskButtonClick: () -> Unit,
     onTaskCardClick: (Int?) -> Unit,
@@ -103,21 +117,45 @@ private fun SubjectScreen(
     var isDeleteSessionDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isDeleteSubjectDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-    //input from the user
-    var subjectName by remember { mutableStateOf("") }
-    var goalHours by remember{ mutableStateOf("") }
-    var selectedColor by remember{ mutableStateOf(Subjects.subjectCardColors.random()) }
+    val snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(key1 = true ) {
+        snackbarEvent.collectLatest {
+                event ->
+            when(event){
+                is SnackbarEvent.ShowSnacker -> {
+                    snackbarHostState.showSnackbar(
+                        message = event.message,
+                        duration = event.duration
+                    )
+
+                }
+
+                SnackbarEvent.NavigateUp -> {
+                    onBackButtonCLick()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = state.studiedHours , key2 = state.goalStudyHours) {
+        onEvent(SubjectEvent.updateProgress)
+    }
+
 
     AddSubjectDialog(
         isOpen = isEditSubjectDialogOpen,
-        subjectName = subjectName ,
-        goalHours = goalHours,
-        onSubjectNameChange ={subjectName = it},
-        onGoalHoursChange ={goalHours = it},
-        selectedColor = selectedColor,
-        onColorChange ={selectedColor =it},
+        subjectName = state.subjectName ,
+        goalHours = state.goalStudyHours,
+        onSubjectNameChange ={onEvent(SubjectEvent.OnSubjectNameChange(it))},
+        onGoalHoursChange ={onEvent(SubjectEvent.OnGoalStudyHoursChange(it))},
+        selectedColor = state.subjectCardColor,
+        onColorChange ={onEvent(SubjectEvent.OnSubjectCardColorChange(it))},
         onDismissRequest = { isEditSubjectDialogOpen = false },
         onConfirmButtonClick = {
+            onEvent(SubjectEvent.UpdateSubject)
             isEditSubjectDialogOpen = false
         }
 
@@ -130,7 +168,9 @@ private fun SubjectScreen(
         bodyText = "Are you sure you want to delete this session? Your study hours will be reduced"
                 +"The action can nat be undo",
         onDismissRequest = {isDeleteSessionDialogOpen = false},
-        onConfirmButtonClick = {isDeleteSessionDialogOpen = false }
+        onConfirmButtonClick = {
+            onEvent(SubjectEvent.DeleteSession)
+            isDeleteSessionDialogOpen = false }
     )
     //delete subject box
 
@@ -140,15 +180,23 @@ private fun SubjectScreen(
         bodyText = "Are you sure you want to delete the subject ? All the related study sessions will be deleted"
                 +"The action can not be undone",
         onDismissRequest = {isDeleteSubjectDialogOpen = false},
-        onConfirmButtonClick = {isDeleteSubjectDialogOpen= false }
+        onConfirmButtonClick = {
+            onEvent(SubjectEvent.DeleteSubject)
+            isDeleteSubjectDialogOpen= false
+
+
+        }
     )
 
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = {
             SubjectScreenTopBar(
-                title = "English",
+                title = state.subjectName,
                 onBackButtonCLick = onBackButtonCLick,
                 onDeleteButtonClick = {isDeleteSubjectDialogOpen = true},
                 onEditButtonClick = {isEditSubjectDialogOpen = true},
@@ -176,16 +224,16 @@ private fun SubjectScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    studiedHours = "100",
-                    goalHours = "20",
-                    progress = 0.5f
+                    studiedHours = state.goalStudyHours,
+                    goalHours = state.studiedHours.toString(),
+                    progress = state.progress
                 )
             }
             tasksList(
                 sectionTitle = "UPCOMING TASKS",
                 emptyListText = "You don't have any upcoming tasks. \n" + "Click the + in the subject screen to add new task.",
-                tasks = tasks,
-                onCheckBoxClick = {},
+                tasks = state.upcomingTasks,
+                onCheckBoxClick = {onEvent(SubjectEvent.OnTaskIsCompleteChange(it))},
                 onTaskCardClick = onTaskCardClick
             )
             item {
@@ -194,8 +242,8 @@ private fun SubjectScreen(
             tasksList(
                 sectionTitle = "COMPLETED TASKS",
                 emptyListText = "You don't have any completed tasks. \n" + "Click the + in the subject screen to add new task.",
-                tasks = tasks,
-                onCheckBoxClick = {},
+                tasks = state.completedTasks,
+                onCheckBoxClick = {onEvent(SubjectEvent.OnTaskIsCompleteChange(it))},
                 onTaskCardClick = onTaskCardClick
             )
             item {
@@ -205,8 +253,11 @@ private fun SubjectScreen(
                 sectionTitle = "STUDY SESSIONS",
                 emptyListText = "You don't have any recent session. \n" +
                         "Start session to track of your session.",
-                Sessions = sessions,
-                onDeleteIconClick = {isDeleteSessionDialogOpen =true}
+                Sessions = state.recentSessions,
+                onDeleteIconClick = {
+                    isDeleteSessionDialogOpen =true
+                    onEvent(SubjectEvent.OnDeleteSessionButtonClick(it))
+                }
 
             )
         }

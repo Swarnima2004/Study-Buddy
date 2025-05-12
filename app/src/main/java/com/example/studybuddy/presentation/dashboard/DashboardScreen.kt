@@ -130,6 +130,8 @@ private fun DashboardScreen(
                     )
 
                 }
+
+                SnackbarEvent.NavigateUp -> { }
             }
         }
     }
