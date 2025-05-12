@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.studybuddy.domain.model.Subjects
+import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.repository.SessionRepository
 import com.example.studybuddy.domain.repository.SubjectRepository
 import com.example.studybuddy.domain.repository.TaskRepository
@@ -90,16 +91,19 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            is SubjectEvent.OnDeleteSessionButtonClick -> TODO()
-            is SubjectEvent.OnTaskIsCompleteChange -> TODO()
-            SubjectEvent.DeleteSession -> TODO()
-            SubjectEvent.DeleteSubject ->  deleteSubject()
+            is SubjectEvent.OnDeleteSessionButtonClick -> {}
+            is SubjectEvent.OnTaskIsCompleteChange -> {
+                updateTask(event.task)
+            }
+
+            SubjectEvent.DeleteSession -> {}
+            SubjectEvent.DeleteSubject -> deleteSubject()
             SubjectEvent.UpdateSubject -> updateSubject()
             SubjectEvent.updateProgress -> {
-              val goalStudyHours = state.value.goalStudyHours.toFloatOrNull() ?: 1f
-                _state.update{
+                val goalStudyHours = state.value.goalStudyHours.toFloatOrNull() ?: 1f
+                _state.update {
                     it.copy(
-                        progress = (state.value.studiedHours / goalStudyHours).coerceIn(0f,1f)
+                        progress = (state.value.studiedHours / goalStudyHours).coerceIn(0f, 1f)
 
                     )
                 }
@@ -149,34 +153,70 @@ class SubjectViewModel @Inject constructor(
                 }
         }
     }
-    private fun deleteSubject(){
+
+    private fun deleteSubject() {
         viewModelScope.launch {
 
-            try{
+            try {
                 val currentSubjetcId = state.value.currentSubjectId
-                if(currentSubjetcId != null){
-                    withContext(Dispatchers.IO){
+                if (currentSubjetcId != null) {
+                    withContext(Dispatchers.IO) {
 
-                    subjectRepository.deleteSubject(subjectId = currentSubjetcId)
+                        subjectRepository.deleteSubject(subjectId = currentSubjetcId)
                     }
                     _snackbarEventFlow.emit(
                         SnackbarEvent.ShowSnacker("Subject Deleted Successfully")
                     )
                     _snackbarEventFlow.emit(SnackbarEvent.NavigateUp)
-                }else{
+                } else {
                     _snackbarEventFlow.emit(
-                        SnackbarEvent.ShowSnacker("No Subject to delete" )
+                        SnackbarEvent.ShowSnacker("No Subject to delete")
                     )
                 }
 
 
-                }catch (e:Exception){
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnacker(
+                        message = "Couldn't delete the subject. ${e.message}",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+
+        }
+    }
+
+    private fun updateTask(task: Task) {
+        viewModelScope.launch {
+            try {
+                taskRepository.upsertTask(
+                    task = task.copy(
+                        isCompleted = !task.isCompleted
+                    )
+
+                )
+                if (task.isCompleted) {
+
                     _snackbarEventFlow.emit(
                         SnackbarEvent.ShowSnacker(
-                            message = "Couldn't delete the subject. ${e.message}",
-                          duration = SnackbarDuration.Long
+                            " Saved in upcoming tasks"
                         )
                     )
+                } else {
+                    _snackbarEventFlow.emit(
+                        SnackbarEvent.ShowSnacker(
+                            "Saved in completed tasks"
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnacker(
+                        "Couldn't update. ${e.message}",
+                        SnackbarDuration.Long
+                    )
+                )
             }
 
         }
