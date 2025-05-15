@@ -91,12 +91,16 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            is SubjectEvent.OnDeleteSessionButtonClick -> {}
+            is SubjectEvent.OnDeleteSessionButtonClick -> {
+                _state.update {
+                    it.copy(session = event.session)
+                }
+            }
             is SubjectEvent.OnTaskIsCompleteChange -> {
                 updateTask(event.task)
             }
 
-            SubjectEvent.DeleteSession -> {}
+            SubjectEvent.DeleteSession -> deleteSession()
             SubjectEvent.DeleteSubject -> deleteSubject()
             SubjectEvent.UpdateSubject -> updateSubject()
             SubjectEvent.updateProgress -> {
@@ -186,6 +190,31 @@ class SubjectViewModel @Inject constructor(
 
         }
     }
+
+    private fun deleteSession() {
+        viewModelScope.launch {
+            try {
+                state.value.session?.let {
+                    sessionRepository.deleteSession(it)
+                }
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnacker(
+                        message = "Session deleted successfully",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            } catch (e: Exception) {
+                _snackbarEventFlow.emit(
+                    SnackbarEvent.ShowSnacker(
+                        message = "Couldn't  delete. ${e.message}",
+                        duration = SnackbarDuration.Long
+                    )
+                )
+            }
+        }
+
+    }
+
 
     private fun updateTask(task: Task) {
         viewModelScope.launch {

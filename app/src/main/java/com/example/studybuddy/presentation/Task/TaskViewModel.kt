@@ -9,7 +9,6 @@ import com.example.studybuddy.domain.model.Task
 import com.example.studybuddy.domain.repository.SubjectRepository
 import com.example.studybuddy.domain.repository.TaskRepository
 import com.example.studybuddy.presentation.navArgs
-import com.example.studybuddy.tasks
 import com.example.studybuddy.util.Priority
 import com.example.studybuddy.util.SnackbarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -143,7 +142,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             val state = _state.value
             if (state.subjectId == null || state.relatedToSubject == null) {
-                Log.d("TaskDebug", "Tasks in DB: $tasks")
+
                 _snackbarEventFlow.emit(
                     SnackbarEvent.ShowSnacker(
                         "Please select subject related to the task",

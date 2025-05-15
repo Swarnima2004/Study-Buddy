@@ -43,11 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.studybuddy.domain.model.Subjects
 import com.example.studybuddy.presentation.Task.TaskScreenNavArg
 import com.example.studybuddy.presentation.components.AddSubjectDialog
 import com.example.studybuddy.presentation.components.CountCard
@@ -55,8 +53,6 @@ import com.example.studybuddy.presentation.components.DeleteDialog
 import com.example.studybuddy.presentation.components.StudySessionList
 import com.example.studybuddy.presentation.components.tasksList
 import com.example.studybuddy.presentation.destinations.TaskScreenRouterDestination
-import com.example.studybuddy.sessions
-import com.example.studybuddy.tasks
 import com.example.studybuddy.util.SnackbarEvent
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
