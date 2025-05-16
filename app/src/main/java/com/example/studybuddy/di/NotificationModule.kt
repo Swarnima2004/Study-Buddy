@@ -29,7 +29,6 @@ object NotificationModule {
             .Builder(context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Study Session")
             .setContentText("00:00:00")
-            .setSmallIcon(R.drawable.learning)
             .setOngoing(true)
             .setContentIntent(ServiceAssist.clickPendingIntent(context))
     }
